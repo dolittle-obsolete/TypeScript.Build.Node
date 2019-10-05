@@ -23,7 +23,7 @@ type PackageObject = {
    */
   prefix?: string
 }
-export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => any, setupCallback?: (w: any) => void) {
+export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => any) {
   return (w: any) => {
     
     let workspaces = getWorkspaces();
@@ -63,74 +63,52 @@ export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => 
         runner: 'node'
       },
       compilers,
-      setup: getSetupFunction(setupCallback)
+      setup: (w: any) => {
+        (process.env as any).IS_TESTING = true;
+        // COPY OF getWorkspaces() FUNCTION!
+        const fs = require('fs');
+        const path = require('path');
+        
+        let workspaces: Workspace[] = [];
+        const packageJson = JSON.parse(fs.readFileSync('./package.json'));
+    
+        if (packageJson.workspaces !== undefined) {
+          let dirs = fs.readdirSync('Source');
+          dirs.forEach((workspace: string) => {
+    
+            let packageJsonPath = path.join(process.cwd(), 'Source', workspace, 'package.json');
+            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
+            workspaces.push({
+              name: workspace,
+              directory: path.dirname(packageJsonPath),
+              package: packageJson
+            })
+          });
+        }
+    
+        if (workspaces.length > 0) {
+          let aliases: any = {};
+          workspaces.forEach((_: Workspace) => {
+            aliases[_.package.name] = _.directory;
+          });
+          require('module-alias').addAliases(aliases);
+        }
+        (global as any).expect = chai.expect;
+        let should = chai.should();
+        (global as any).sinon = require('sinon');
+        let sinonChai = require('sinon-chai');
+        let chaiAsPromised = require('chai-as-promised');
+        chai.use(sinonChai);
+        chai.use(chaiAsPromised);
+
+        (global as any).mock = require('@fluffy-spoon/substitute').Substitute;
+      }
     };
     
     if (typeof settingsCallback === 'function') settingsCallback(settings);
 
     return settings;
   };
-}
-
-function getFunctionBody(func: Function) {
-  var entire = func.toString();
-  var body = entire.substring(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-  return body;
-}
-
-function getSetupFunction(setupCallback?: (w: any) => void) {
-  let setup = function (w: any) {
-    // COPY OF getWorkspaces() FUNCTION!
-    const fs = require('fs');
-    const path = require('path');
-    
-    let workspaces: Workspace[] = [];
-    const packageJson = JSON.parse(fs.readFileSync('./package.json'));
-
-    if (packageJson.workspaces !== undefined) {
-      let dirs = fs.readdirSync('Source');
-      dirs.forEach((workspace: string) => {
-
-        let packageJsonPath = path.join(process.cwd(), 'Source', workspace, 'package.json');
-        let packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
-        workspaces.push({
-          name: workspace,
-          directory: path.dirname(packageJsonPath),
-          package: packageJson
-        })
-      });
-    }
-
-    if (workspaces.length > 0) {
-      let aliases: any = {};
-      workspaces.forEach((_: Workspace) => {
-        aliases[_.package.name] = _.directory;
-      });
-      require('module-alias').addAliases(aliases);
-    }
-    
-    
-    process.env.WALLABY_TESTING = true as any;
-    (global as any).expect = chai.expect;
-    let should = chai.should();
-    (global as any).sinon = require('sinon');
-    let sinonChai = require('sinon-chai');
-    let chaiAsPromised = require('chai-as-promised');
-    chai.use(sinonChai);
-    chai.use(chaiAsPromised);
-
-    (global as any).mock = require('@fluffy-spoon/substitute').Substitute;
-  };
-
-  if (typeof setupCallback === 'function') {
-      var setupBody = getFunctionBody(setup);
-      var setupCallbackBody = getFunctionBody(setupCallback);
-      var combined = setupBody + '\n' + setupCallbackBody;
-      var newFunction = new Function(combined);
-      return newFunction;
-  }
-
-  return setup;
 }
 
 function getWorkspaces(): Workspace[] {

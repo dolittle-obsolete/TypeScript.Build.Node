@@ -1,0 +1,31 @@
+{
+    "name": "@dolittle/package",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "license": "ISC",
+    "publishConfig": {
+        "access": "public"
+    },
+    "main": "lib/index.js",
+    "types": "index.d.ts",
+    "typings": "index.d.ts",
+    "scripts": {
+        "ts:cjs": "tsc -p tsconfig.json --declaration false",
+        "ts:typedefs": "tsc --outDir . --emitDeclarationOnly",
+        "ts:all": "yarn ts:cjs && yarn ts:typedefs",
+        "ts:clean": "rimraf ./*.d.ts '**/*.d.ts' lib",
+        "build": "yarn clean && yarn ts:all",
+        "clean": "rimraf dist && yarn ts:clean",
+        "prepublishOnly": "yarn test",
+        "test": "yarn build && mocha --require '@dolittle/typescript.build/lib/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)' 'lib/**/for_*/**/!(given)/*.+(js|ts)' --recursive --extension ts --extension js"
+    },
+    "devDependencies": {
+        "@dolittle/typescript.build": "latest"
+    },
+    "files": [
+        "lib",
+        "package.json",
+        "**/*.d.ts"
+    ]
+}
