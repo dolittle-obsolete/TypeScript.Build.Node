@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "workspaces": [
+    "Source/*"
+  ],
+  "devDependencies": {
+      "@dolittle/typescript.build": "latest"
+  }
+}

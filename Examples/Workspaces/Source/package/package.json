@@ -20,9 +20,6 @@
         "prepublishOnly": "yarn test",
         "test": "yarn build && mocha --require '@dolittle/typescript.build/lib/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)' 'lib/**/for_*/**/!(given)/*.+(js|ts)' --recursive --extension ts --extension js"
     },
-    "devDependencies": {
-        "@dolittle/typescript.build": "latest"
-    },
     "files": [
         "lib",
         "package.json",
