@@ -4,3 +4,4 @@
  *--------------------------------------------------------------------------------------------*/
  export * from './karma.conf'
  export * from './wallaby';
+ export * from './babel.wallaby';

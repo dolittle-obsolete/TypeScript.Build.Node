@@ -1,3 +1,4 @@
+*.d.ts
 lib
 yarn.lock
 package-lock.json
