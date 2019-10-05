@@ -30,7 +30,7 @@ export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => 
     
     process.env.NODE_PATH = path.join(w.projectCacheDir, 'Source');
     
-    let packagesGlob = workspaces.length > 0? `@(${workspaces.map(_ => _.name).join('|')})` : '.';
+    let packagesGlob = workspaces.length > 0? `@(${workspaces.map(_ => _.name).join('|')})/` : '';
   
     let compilers: any= {};
     compilers[`Source/${packagesGlob}/**/*.@(ts|js)`] = w.compilers.babel(wallabyBabelConfig);
@@ -45,16 +45,16 @@ export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => 
         { pattern: 'node_modules/sinon/pkg', instrument: false },
         { pattern: 'node_modules/sinon-chai', instrument: false },
         { pattern: `Source/**/*.d.ts`, ignore: true },
-        { pattern: `Source/${packagesGlob}/lib/**`, ignore: true },
-        { pattern: `Source/${packagesGlob}/**/for_*/**/!(given)/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}/**/for_*/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}/**/for_*/**/given/**/*.@(ts|js)`},
-        { pattern: `Source/${packagesGlob}/**/*.@(ts|js)`}
+        { pattern: `Source/${packagesGlob}lib/**`, ignore: true },
+        { pattern: `Source/${packagesGlob}**/for_*/**/!(given)/*.@(ts|js)`, ignore: true },
+        { pattern: `Source/${packagesGlob}**/for_*/*.@(ts|js)`, ignore: true },
+        { pattern: `Source/${packagesGlob}**/for_*/**/given/**/*.@(ts|js)`},
+        { pattern: `Source/${packagesGlob}**/*.@(ts|js)`}
       ],
       tests: [
-        { pattern: `Source/${packagesGlob}/**/for_*/**/given/**/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}/**/for_*/**/!(given)/*.@(ts|js)`},
-        { pattern: `Source/${packagesGlob}/**/for_*/*.@(ts|js)`}
+        { pattern: `Source/${packagesGlob}**/for_*/**/given/**/*.@(ts|js)`, ignore: true },
+        { pattern: `Source/${packagesGlob}**/for_*/**/!(given)/*.@(ts|js)`},
+        { pattern: `Source/${packagesGlob}**/for_*/*.@(ts|js)`}
       ],
       
       testFramework: 'mocha',
