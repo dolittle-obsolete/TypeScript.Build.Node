@@ -8,5 +8,6 @@
         "@dolittle/typescript.build.node": ["Source/index.ts"]
     },
       "sourceRoot": "./Source"
-    }
+    },
+    "include": ["Source/**/*.ts"]
   }
