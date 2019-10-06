@@ -52,6 +52,7 @@ export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => 
         { pattern: `Source/${packagesGlob}**/*.@(ts|js)`}
       ],
       tests: [
+        { pattern: `Source/${packagesGlob}lib/**`, ignore: true },
         { pattern: `Source/${packagesGlob}**/for_*/**/given/**/*.@(ts|js)`, ignore: true },
         { pattern: `Source/${packagesGlob}**/for_*/**/!(given)/*.@(ts|js)`},
         { pattern: `Source/${packagesGlob}**/for_*/*.@(ts|js)`}
