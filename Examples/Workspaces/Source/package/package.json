@@ -11,14 +11,19 @@
     "types": "index.d.ts",
     "typings": "index.d.ts",
     "scripts": {
+        "ts:clean": "rimraf '**/*.d.ts'",
         "ts:cjs": "tsc -p tsconfig.json --declaration false",
         "ts:typedefs": "tsc --outDir . --emitDeclarationOnly",
         "ts:all": "yarn ts:cjs && yarn ts:typedefs",
-        "ts:clean": "rimraf ./*.d.ts '**/*.d.ts' lib",
+        
+        "test:clean": "rimraf 'lib/**/for_*'",
+        "test:build": "yarn ts:cjs",
+        "test:run": "mocha --require '@dolittle/typescript.build/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)' 'lib/**/for_*/**/!(given)/*.+(js|ts)'",
+        
+        "clean": "rimraf lib && yarn ts:clean",
         "build": "yarn clean && yarn ts:all",
-        "clean": "rimraf dist && yarn ts:clean",
-        "prepublishOnly": "yarn test",
-        "test": "yarn build && mocha --require '@dolittle/typescript.build/lib/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)' 'lib/**/for_*/**/!(given)/*.+(js|ts)' --recursive --extension ts --extension js"
+        "test": "yarn test:build && yarn test:run",
+        "prepublishOnly": "yarn build && yarn test:run && yarn test:clean"
     },
     "files": [
         "lib",
