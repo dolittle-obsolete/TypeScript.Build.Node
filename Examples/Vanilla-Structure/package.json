@@ -17,7 +17,7 @@
     
     "test:clean": "rimraf 'lib/**/for_*'",
     "test:build": "yarn ts:cjs",
-    "test:run": "mocha --require '@dolittle/typescript.build/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)' 'lib/**/for_*/**/!(given)/*.+(js|ts)'",
+    "test:run": "mocha --require '@dolittle/typescript.build/mocha.opts' --reporter=spec 'lib/**/for_*/**/*.+(js|ts)'",
     
     "clean": "rimraf lib && yarn ts:clean",
     "build": "yarn clean && yarn ts:all",
