@@ -19,7 +19,7 @@
     
         "experimentalDecorators": true,
         "rootDir": "Source",
-        "outDir": "bin",
+        "outDir": "lib",
         "baseUrl": "./",
         "paths": {
             "@dolittle/cli": ["Source/index.ts"],
