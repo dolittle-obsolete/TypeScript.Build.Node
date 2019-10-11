@@ -4,9 +4,10 @@
         "module": "commonjs",
         "target": "es2017",
         "esModuleInterop": true,
-        "declaration": false,
         "stripInternal": true,
         "downlevelIteration": true,
+
+        "declaration": true,
     
         "strict": true,
         "noImplicitReturns": true,
