@@ -16,17 +16,14 @@
         "inlineSourceMap": true,
         "inlineSources": true,
 
-    
         "experimentalDecorators": true,
         "rootDir": "Source",
         "outDir": "lib",
         "baseUrl": "./",
-        "paths": {
-            "@dolittle/cli": ["Source/index.ts"],
-            "*": ["Types/*"]
-        },
         "sourceRoot": "./Source",
-        "typeRoots": ["./Types/**"]
+        "paths": {
+            "@dolittle/package": ["Source/index.ts"]
+        }
     },
     "exclude": ["Source/**/*.d.ts", "Source/**/*.js", "node_modules"],
     "include": ["Source/**/*.ts"] 
