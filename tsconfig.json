@@ -1,13 +1,13 @@
 {
-    "extends": "./tsconfig.settings.json",
-    "compilerOptions": {
-      "rootDir": "./Source",
-      "outDir": "lib",
-      "baseUrl": "./Source",
-      "paths": {
-        "@dolittle/typescript.build.node": ["Source/index.ts"]
+  "extends": "./TSConfig/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./Source",
+    "baseUrl": "./Source",
+    "paths": {
+      "@dolittle/typescript.build": ["Source/index.ts"]
     },
-      "sourceRoot": "./Source"
-    },
-    "include": ["Source/**/*.ts"]
-  }
+    "sourceRoot": "./Source",
+    "outDir": "lib"
+  },
+  "include": ["Source/**/*.ts"]
+}
