@@ -11,4 +11,9 @@ export default function setupGulp(originalExports: any) {
     let context = GulpContext.fromArguments();
     let gulpTasks = getGulpTasks(context);
     for( var task in gulpTasks.allTasks ) originalExports[task] = task;
+    originalExports.default = (done: (error?: Error) => void) => {
+        console.info('There is no default task');
+        done();
+        process.exit(0);
+    }
 }

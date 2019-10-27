@@ -5,7 +5,7 @@
 import { Project } from '@dolittle/typescript.build';
 import yargs from 'yargs';
 import fs from 'fs';
-
+import log from 'fancy-log';
 
 /**
  * Build context
@@ -29,12 +29,15 @@ export class GulpContext {
             if (!fs.existsSync(rootFolder) || !fs.statSync(rootFolder).isDirectory()) {
                 throw new Error(`'${rootFolder}' is not a directory`); 
             }
+
+            process.chdir(rootFolder);
             this._project = new Project(rootFolder);
 
         } else {
+
+            process.chdir(process.env.PWD!);
             this._project = new Project(process.env.PWD);
         }
-        console.log(this._project);
     }
 
     /**
