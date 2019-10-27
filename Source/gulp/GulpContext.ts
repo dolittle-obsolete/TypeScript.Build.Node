@@ -2,28 +2,47 @@
  *  Copyright (c) Dolittle. All rights reserved.
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { GulpConfig } from '../internal';
+import { Project } from '@dolittle/typescript.build';
+import yargs from 'yargs';
+import fs from 'fs';
 
 
 /**
  * Build context
  */
 export class GulpContext {
-    private _config!: GulpConfig;
-
+    private _project: Project
     /**
-     * Initializes a new instance of {Context}
-     * @param {string|undefined|null} [root] Optional root
+     * Create an instance of {GulpContext} based on CLI arguments
      */
-    constructor(private _root?: string) {
+    static fromArguments() {
+        let root = yargs.argv.root as string;
+        return new GulpContext(root);
     }
 
     /**
-     * Get the current config object for the context
-     * @returns {Config} The config object associated with the build context
+     * Initializes a new instance of {GulpContext}
+     * @param {Project} [_project] Optional root folder
      */
-    get config() {
-        if (!this._config ) this._config = GulpConfig.get(this._root);
-        return this._config;
+    constructor(rootFolder?: string) {
+        if (rootFolder !== undefined) {
+            if (!fs.existsSync(rootFolder) || !fs.statSync(rootFolder).isDirectory()) {
+                throw new Error(`'${rootFolder}' is not a directory`); 
+            }
+            this._project = new Project(rootFolder);
+
+        } else {
+            this._project = new Project(process.env.PWD);
+        }
+        console.log(this._project);
+    }
+
+    /**
+     * Gets the {Project} that holds all the meta data for the current project
+     *
+     * @readonly
+     */
+    get project() {
+        return this._project;
     }
 }
