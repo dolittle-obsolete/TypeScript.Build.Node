@@ -41,7 +41,6 @@
         "babel-merge": "^3.0.0",
         "gulp": "^4.0.2",
         "gulp-cli": "^2.2.0",
-        "gulp-notify": "^3.2.0",
         "gulp-typescript": "^5.0.1",
         "module-alias": "^2.2.0",
         "yargs": "^14.2.0"
