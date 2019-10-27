@@ -14,15 +14,13 @@
         "package.json",
         "TSConfig/**"
     ],
-    "main": "lib/umd/index.js",
-    "module": "lib/es/index.js",
+    "main": "Distribution/index.js",
     "types": "Source/index.d.ts",
-    "typings": "Source/index.d.ts",
     "scripts": {
         "ts:cjs": "tsc -p tsconfig.json --declaration false",
         "ts:typedefs": "tsc -p tsconfig.json --outDir ./Source --emitDeclarationOnly",
         "ts:all": "yarn ts:cjs && yarn ts:typedefs",
-        "ts:clean": "rimraf ./Source/*.d.ts Source/**/*.d.ts lib",
+        "ts:clean": "rimraf ./Source/*.d.ts Source/**/*.d.ts Distribution",
         "build": "yarn clean && yarn ts:all",
         "clean": "rimraf dist && yarn ts:clean",
         "prepublishOnly": "yarn build"
