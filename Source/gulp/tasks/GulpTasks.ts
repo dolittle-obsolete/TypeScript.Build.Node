@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 import {TaskFunction} from 'undertaker';
 import gulp from 'gulp';
-import { GulpContext, getCleanTasks, Sources, getSources, getBuildTasks } from '../../internal';
+import { GulpContext, getCleanTasks, getBuildTasks } from '../../internal';
 import { YarnWorkspace } from '@dolittle/typescript.build';
 
 class GulpTasks {
     static gulpTask: GulpTasks
     
-    constructor(private _context: GulpContext, private _sources: Sources) {}
+    constructor(private _context: GulpContext) {}
 
     get cleanTasks() {
         return getCleanTasks(this._context);
     }
 
     get buildTasks() {
-        return getBuildTasks(this._context, this._sources);
+        return getBuildTasks(this._context);
     }
 
     get allTasks() {
@@ -26,7 +26,7 @@ class GulpTasks {
 }
 
 export function getGulpTasks(context: GulpContext) {
-    if (GulpTasks.gulpTask === undefined) GulpTasks.gulpTask = new GulpTasks(context, getSources(context));
+    if (GulpTasks.gulpTask === undefined) GulpTasks.gulpTask = new GulpTasks(context);
     return GulpTasks.gulpTask
 }
 

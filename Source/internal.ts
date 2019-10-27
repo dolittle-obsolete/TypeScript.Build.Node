@@ -8,8 +8,6 @@ export * from './Wallaby/babel.wallaby';
 
 // gulp
 export * from './Gulp/GulpContext'
-
-export * from './Gulp/Tasks/Sources';
 export * from './Gulp/Tasks/CleanTasks';
 export * from './Gulp/Tasks/BuildTasks';
 export * from './Gulp/Tasks/GulpTasks';

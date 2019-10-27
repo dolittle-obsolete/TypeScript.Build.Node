@@ -7,7 +7,7 @@
       "@dolittle/typescript.build": ["Source/index.ts"]
     },
     "sourceRoot": "./Source",
-    "outDir": "lib"
+    "outDir": "Distribution",
   },
-  "include": ["Source/**/*.ts"]
+  "include": ["Source/**/*.ts"],
 }

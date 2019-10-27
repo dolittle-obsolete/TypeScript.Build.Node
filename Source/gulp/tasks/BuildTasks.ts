@@ -3,54 +3,45 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import gulp from 'gulp';
-import fs from 'fs';
-import path from 'path';
-import notify from 'gulp-notify';
+import gulpTypescript from 'gulp-typescript';
 import {TaskFunction} from 'undertaker';
-import {GulpContext, Sources, createTask} from '../../internal'
+import {GulpContext, createTask, getCleanTasks} from '../../internal'
 
 
 export class BuildTasks {
     static buildTasks: BuildTasks
 
     private _buildTask!: TaskFunction
-    private _typeDefsTask!: TaskFunction
 
-    constructor(private _context: GulpContext, sources: Sources) {}
+    constructor(private _context: GulpContext) {}
 
     get buildTask() {
-    
-        let compileSourcesTask: gulp.TaskFunction = (done: any) => {
-            sources.sourceFiles(context.config)
-                .on('error', (error: Error) => {
-    
+        if (this._buildTask === undefined) {
+            this._buildTask = gulp.series(getCleanTasks(this._context).cleanTask, 
+                createTask(this._context, 'ts-build', workspace => {
+                    let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
+                    let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
+                    return done => {
+                            tsProject.src()
+                            .pipe(tsProject())
+                            .js.pipe(gulp.dest(projectSources.outputFolder!))
+                            .on('end', () => done())
+                    };
                 })
-                .pipe()
-        };
-        compileSourcesTask.displayName = 'build';
-    
-        let buildTask = gulp.series(
-            getCleanTask(context),
-            compileSourcesTask
-        );
-        return 
-        
-    }
-    get typeDefsTask() {
-        if (this._typeDefsTask === undefined) {
-            this._typeDefsTask = createTask(this._context, 'ts-typedefs', workspace => {
-                let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-                
-            });
+            );
         }
+
+        return this._buildTask;
     }
+
+
     get allTasks() {
         return [this.buildTask];
     }
     
 }
 
-export function getBuildTasks(context: GulpContext, sources: Sources) {
-    if (BuildTasks.buildTasks === undefined) BuildTasks.buildTasks = new BuildTasks(context, sources);
+export function getBuildTasks(context: GulpContext) {
+    if (BuildTasks.buildTasks === undefined) BuildTasks.buildTasks = new BuildTasks(context);
     return BuildTasks.buildTasks;
 }

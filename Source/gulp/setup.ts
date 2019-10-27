@@ -2,7 +2,6 @@
  *  Copyright (c) Dolittle. All rights reserved.
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import {Project} from '@dolittle/typescript.build';
 import { GulpContext, getGulpTasks } from '../internal';
 /**
  * Setup the tasks from this package
@@ -13,5 +12,3 @@ export default function setupGulp(originalExports: any) {
     let gulpTasks = getGulpTasks(context);
     for( var task in gulpTasks.allTasks ) originalExports[task] = task;
 }
-
-module.exports = setup;
