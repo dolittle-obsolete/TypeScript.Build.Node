@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2017"],
+    "lib": ["es2017", "dom"],
     "module": "commonjs",
     "target": "es2015",
     "esModuleInterop": true,
@@ -16,7 +16,9 @@
     "inlineSourceMap": true,
     "inlineSources": true,
 
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+
+    "downlevelIteration": true 
   }
 }
   

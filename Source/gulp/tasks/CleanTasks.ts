@@ -51,9 +51,8 @@ export class CleanTasks {
     }
     get cleanTask() {
         if (this._cleanTask === undefined) {
-            let task = gulp.parallel(this.distributionCleanTask, this.typeDefsCleanTask);
-            task.displayName = 'clean'
-            this._cleanTask = createTask(this._context, 'clean', workspace => gulp.parallel(this.distributionCleanTask, this.typeDefsCleanTask));
+            this._cleanTask = gulp.parallel(this.distributionCleanTask, this.typeDefsCleanTask);
+            this._cleanTask.displayName = 'clean'
         }
     
         return this._cleanTask;

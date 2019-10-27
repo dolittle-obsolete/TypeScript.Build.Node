@@ -40,6 +40,7 @@ export function createTask(context: GulpContext, taskName: string, createTaskCal
             workspaceTasks.push(workspaceTask);
         });
         task = gulp.parallel(workspaceTasks);
+        task.displayName = taskName
     }
     else {
         task = createTaskCallback();

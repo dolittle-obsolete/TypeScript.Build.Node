@@ -22,13 +22,14 @@ export class BuildTasks {
                     let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
                     let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
                     return done => {
-                            tsProject.src()
-                            .pipe(tsProject())
-                            .js.pipe(gulp.dest(projectSources.outputFolder!))
-                            .on('end', () => done())
+                        let tsResult = tsProject.src().pipe(tsProject());
+                        tsResult.js.pipe(gulp.dest(projectSources.outputFolder!));
+                        tsResult.dts.pipe(gulp.dest(projectSources.declarationsOutputFolder!));
+                        done();
                     };
                 })
             );
+            this._buildTask.displayName = 'build';
         }
 
         return this._buildTask;

@@ -10,7 +10,10 @@ import { GulpContext, getGulpTasks } from '../internal';
 export default function setupGulp(originalExports: any) {
     let context = GulpContext.fromArguments();
     let gulpTasks = getGulpTasks(context);
-    for( var task in gulpTasks.allTasks ) originalExports[task] = task;
+    for (let task of gulpTasks.allTasks ) {
+        if (task.displayName === undefined) throw new Error('Task missing displayName!');
+        originalExports[task.displayName] = task;
+    }
     originalExports.default = (done: (error?: Error) => void) => {
         console.info('There is no default task');
         done();
