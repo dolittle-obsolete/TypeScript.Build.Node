@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import gulp from 'gulp';
+import gulpSourcemaps from 'gulp-sourcemaps';
 import gulpTypescript from 'gulp-typescript';
 import {TaskFunction} from 'undertaker';
 import {GulpContext, createTask, getCleanTasks} from '../../internal'
@@ -22,9 +23,15 @@ export class BuildTasks {
                     let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
                     let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
                     return done => {
-                        let tsResult = tsProject.src().pipe(tsProject());
-                        tsResult.js.pipe(gulp.dest(projectSources.outputFolder!));
-                        tsResult.dts.pipe(gulp.dest(projectSources.declarationsOutputFolder!));
+                        let tsResult = tsProject.src()
+                            .pipe(gulpSourcemaps.init())
+                            .pipe(tsProject());
+                        
+                        tsResult.js
+                            .pipe(gulpSourcemaps.write())
+                            .pipe(gulp.dest(projectSources.outputFolder!));
+                        tsResult.dts
+                            .pipe(gulp.dest(projectSources.outputFolder!));
                         done();
                     };
                 })
