@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import {TaskFunction} from 'undertaker';
 import gulp from 'gulp';
-import { GulpContext, getCleanTasks, getBuildTasks } from '../../internal';
 import { YarnWorkspace } from '@dolittle/typescript.build';
+import { GulpContext, getCleanTasks, getBuildTasks, getTestTasks } from '../../internal';
 
 class GulpTasks {
     static gulpTask: GulpTasks
@@ -20,8 +20,12 @@ class GulpTasks {
         return getBuildTasks(this._context);
     }
 
+    get testTasks() {
+        return getTestTasks(this._context);
+    }
+
     get allTasks() {
-        return [...this.cleanTasks.allTasks, ...this.buildTasks.allTasks];
+        return [...this.cleanTasks.allTasks, ...this.buildTasks.allTasks, ...this.testTasks.allTasks];
     }
 }
 
