@@ -1,3 +1,12 @@
 {
-  "extends": "../../node_modules/@dolittle/typescript.build.node/TSConfig/tsconfig.workspace-package.json",
+  "extends": "./TSConfig/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "Source",
+    "outDir": "Distribution",
+    "declarationDir": "Distribution",
+    "baseUrl": "./",
+    "sourceRoot": "./Source",
+  },
+  "exclude": ["node_modules"],
+  "include": ["Source/**/*.ts"] 
 }
