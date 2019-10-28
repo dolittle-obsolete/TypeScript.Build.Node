@@ -1,13 +1,3 @@
 {
-  "extends": "./TSConfig/tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "./Source",
-    "baseUrl": "./Source",
-    "paths": {
-      "@dolittle/typescript.build": ["Source/index.ts"]
-    },
-    "sourceRoot": "./Source",
-    "outDir": "Distribution",
-  },
-  "include": ["Source/**/*.ts"],
+  "extends": "../../node_modules/@dolittle/typescript.build.node/TSConfig/tsconfig.workspace-package.json",
 }
