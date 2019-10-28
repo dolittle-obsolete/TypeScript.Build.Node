@@ -33,6 +33,7 @@ export class TestTasks {
     get testTask() {
         if (this._testTask === undefined) {
             this._testTask = gulp.series(getBuildTasks(this._context).buildTask, this.runTestsTask);
+            this._testTask.displayName = 'test';
         }
         return this._testTask;
     }
