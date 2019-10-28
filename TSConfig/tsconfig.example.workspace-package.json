@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "Distribution",
+    "declarationDir": "Distribution",
     "baseUrl": "./",
     "sourceRoot": "./",
   },
