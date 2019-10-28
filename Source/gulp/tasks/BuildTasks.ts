@@ -26,13 +26,12 @@ export class BuildTasks {
                         let tsResult = tsProject.src()
                             .pipe(gulpSourcemaps.init())
                             .pipe(tsProject());
-                        
-                        tsResult.js
-                            .pipe(gulpSourcemaps.write())
-                            .pipe(gulp.dest(projectSources.outputFolder!));
                         tsResult.dts
                             .pipe(gulp.dest(projectSources.outputFolder!));
-                        done();
+                        return tsResult.js
+                            .pipe(gulpSourcemaps.write())
+                            .pipe(gulp.dest(projectSources.outputFolder!))
+                            .on('end', done);
                     };
                 })
             );

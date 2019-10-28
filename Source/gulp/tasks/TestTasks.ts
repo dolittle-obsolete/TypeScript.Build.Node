@@ -21,18 +21,19 @@ export class TestTasks {
         if (this._runTestsTask === undefined) {
             this._runTestsTask = createTask(this._context, 'test-run', workspace => {
                 let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-                return done => {
-                    gulp.src(projectSources.compiledTestsGlobs!, {read: false})
-                        .pipe(gulpMocha({reporter: 'spec', require: ['@dolittle/typescript.build/mocha.opts']}));
-                }
-
+                return done => gulp.src(projectSources.compiledTestsGlobs!, {read: false})
+                                .pipe(gulpMocha({reporter: 'spec', require: ['@dolittle/typescript.build/mocha.opts']}))
+                                .on('end', done);
             });
         }
         return this._runTestsTask;
     }
     get testTask() {
         if (this._testTask === undefined) {
-            this._testTask = gulp.series(getBuildTasks(this._context).buildTask, this.runTestsTask);
+            this._testTask = gulp.series(
+                getBuildTasks(this._context).buildTask, 
+                this.runTestsTask
+            );
             this._testTask.displayName = 'test';
         }
         return this._testTask;
