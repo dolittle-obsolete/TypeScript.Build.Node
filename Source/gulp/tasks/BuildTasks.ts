@@ -77,8 +77,7 @@ export class BuildTasks {
 
     private createWorkspacesBuildTask() {
         let tasks: TaskFunction[] = [];
-        let jsStreams: {stream: Readable, dest: string}[] = [];
-        let dtsStreams: {stream: Readable, dest: string}[] = [];
+        let streams: {stream: Readable, dest: string}[] = [];
 
         this._context.project.workspaces.forEach(workspace => {
             let projectSources = workspace.sources;
@@ -88,8 +87,8 @@ export class BuildTasks {
                     .pipe(gulpSourcemaps.init())
                     .pipe(tsProject());
                     
-                jsStreams.push({stream: tsResult.js, dest: projectSources.outputFolder!});
-                dtsStreams.push({stream: tsResult.dts, dest: projectSources.outputFolder!});
+                streams.push({stream: tsResult.js, dest: projectSources.outputFolder!});
+                streams.push({stream: tsResult.dts, dest: projectSources.outputFolder!});
                 tsResult
                     .on('end', _ => done())
                     .on('error', err => done(err));
@@ -98,26 +97,20 @@ export class BuildTasks {
             taskFunction.displayName = `build:${workspace.workspacePackage.packageObject.name}`;
             tasks.push(taskFunction);
         });
-        let writeFilesTask = this.createWriteFilesTask(jsStreams, dtsStreams);
-        
+        let writeFilesTask: TaskFunction = done => {
+            let counter = 0;
+            for (let _ of streams) {
+                let stream = _.stream
+                    .pipe(gulp.dest(_.dest))
+                    .on('end', _ => {
+                        counter += 1;
+                        if (counter === streams.length) done();
+                    })
+                    .on('error', err => done(err));
+            }
+        };
+        writeFilesTask.displayName = 'build-write-files';
         let task = gulp.series(gulp.parallel(tasks), writeFilesTask);
-        return task;
-    }
-
-    private createWriteFilesTask(jsStreams: {stream: Readable, dest: string}[], dtsStreams: {stream: Readable, dest: string}[]) {
-        let tasks: TaskFunction[] = [];
-        let streams = jsStreams.concat(dtsStreams);
-        streams.forEach(stream => {
-            let task: TaskFunction = done => {
-                return stream.stream
-                        .pipe(gulp.dest(stream.dest))
-                        .on('end', _ => done())
-                        .on('error', err => done(err));
-            };
-            tasks.push(task);
-        });
-        let task = gulp.parallel(tasks);
-        task.displayName = 'build-write-files';
         return task;
     }
 }
