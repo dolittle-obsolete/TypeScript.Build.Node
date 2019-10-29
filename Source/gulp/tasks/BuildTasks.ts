@@ -7,6 +7,7 @@ import gulpSourcemaps from 'gulp-sourcemaps';
 import gulpTypescript from 'gulp-typescript';
 import {TaskFunction} from 'undertaker';
 import {GulpContext, createTask, getCleanTasks} from '../../internal'
+import { Readable } from 'stream';
 
 
 export class BuildTasks {
@@ -18,24 +19,25 @@ export class BuildTasks {
 
     get buildTask() {
         if (this._buildTask === undefined) {
-            this._buildTask = gulp.series(getCleanTasks(this._context).cleanTask, 
-                createTask(this._context, 'ts-build', workspace => {
-                    let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-                    let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
-                    return done => {
-                        let tsResult = tsProject.src()
-                            .pipe(gulpSourcemaps.init())
-                            .pipe(tsProject());
-                        tsResult.dts
-                            .pipe(gulp.dest(projectSources.outputFolder!));
-                        return tsResult.js
-                            .pipe(gulpSourcemaps.write())
-                            .pipe(gulp.dest(projectSources.outputFolder!))
-                            .on('end', done);
-                    };
-                })
-            );
-            this._buildTask.displayName = 'build';
+            // DOES NOT WORK WHEN BUILDING IN PARALLELL, PROBABLY BECAUSE OF FILE OUTPUT
+            // this._buildTask = gulp.series(getCleanTasks(this._context).cleanTask, 
+            //     createTask(this._context, 'ts-build', true, workspace => {
+            //         let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
+            //         let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
+            //         return done => {
+            //             let tsResult = tsProject.src()
+            //                 .pipe(gulpSourcemaps.init())
+            //                 .pipe(tsProject());
+            //             tsResult.dts
+            //                 .pipe(gulp.dest(projectSources.outputFolder!));
+            //             return tsResult.js
+            //                 .pipe(gulpSourcemaps.write())
+            //                 .pipe(gulp.dest(projectSources.outputFolder!))
+            //                 .on('end', done);
+            //         };
+            //     })
+            // );
+            this._buildTask = this.createBuildTask();
         }
 
         return this._buildTask;
@@ -46,6 +48,71 @@ export class BuildTasks {
         return [this.buildTask];
     }
     
+    private createBuildTask() {
+        let task: TaskFunction
+        if (this._context.project.workspaces.length > 0) {
+            task = gulp.series(getCleanTasks(this._context).cleanTask, this.createWorkspacesBuildTask());
+        }
+        else {
+            let projectSources = this._context.project.sources;
+            let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
+            let taskFunction: TaskFunction = done => {
+                let tsResult = tsProject.src()
+                    .pipe(gulpSourcemaps.init())
+                    .pipe(tsProject());
+                tsResult.dts
+                    .pipe(gulp.dest(projectSources.outputFolder!));
+                return tsResult.js
+                    .pipe(gulpSourcemaps.write())
+                    .pipe(gulp.dest(projectSources.outputFolder!))
+                    .on('end', _ => done())
+                    .on('error', err => done(err));
+            };
+            task = gulp.series(getCleanTasks(this._context).cleanTask, taskFunction);
+                
+        }
+        task.displayName = 'build';
+        return task;
+    }
+
+    private createWorkspacesBuildTask() {
+        let tasks: TaskFunction[] = [];
+        let jsStreams: {stream: Readable, dest: string}[] = []
+        let dtsStreams: {stream: Readable, dest: string}[] = []
+        this._context.project.workspaces.forEach(workspace => {
+            let projectSources = this._context.project.sources;
+            let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
+            let taskFunction: TaskFunction = done => {
+                let tsResult = tsProject.src()
+                    .pipe(gulpSourcemaps.init())
+                    .pipe(tsProject());
+                    
+                jsStreams.push({stream: tsResult.js, dest: projectSources.outputFolder!});
+                dtsStreams.push({stream: tsResult.dts, dest: projectSources.outputFolder!});
+                tsResult
+                    .on('end', _ => done())
+                    .on('error', err => done(err));
+                done();
+                return tsResult;
+            };
+            taskFunction.displayName = `build:${workspace.workspacePackage.packageObject.name}`;
+            tasks.push(taskFunction);
+        });
+        let endOfBuildTask: TaskFunction = done => {
+            jsStreams.forEach(_ => {
+                console.log(`Writing js to '${_.dest}'`);
+                _.stream.pipe(gulp.dest(_.dest));
+            });
+            dtsStreams.forEach(_ => {
+                console.log(`Writing dts to '${_.dest}'`);
+                _.stream.pipe(gulp.dest(_.dest));
+            });
+            done()
+        }
+        endOfBuildTask.displayName = 'build-end';
+        let task = gulp.series(gulp.parallel(tasks), endOfBuildTask);
+        return task;
+    }
 }
 
 export function getBuildTasks(context: GulpContext) {

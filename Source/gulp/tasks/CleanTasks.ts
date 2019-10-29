@@ -16,7 +16,7 @@ export class CleanTasks {
 
     get cleanTask() {
         if (this._cleanTask === undefined) {
-            this._cleanTask = createTask(this._context, 'clean', workspace => {
+            this._cleanTask = createTask(this._context, 'clean', true,  workspace => {
                 let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
                 return done => rimraf(projectSources.outputFolder!, error => done(error));
             });
@@ -28,7 +28,7 @@ export class CleanTasks {
 
     get testsCleanTask() {
         if (this._testsCleanTask === undefined) {
-            this._testsCleanTask = createTask(this._context, 'test-clean', workspace => {
+            this._testsCleanTask = createTask(this._context, 'test-clean', true, workspace => {
                 let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
                 return done => rimraf(projectSources.compiledTestsGlobs!, error => done(error));
             });

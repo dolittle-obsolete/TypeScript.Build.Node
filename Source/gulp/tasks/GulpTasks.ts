@@ -34,7 +34,7 @@ export function getGulpTasks(context: GulpContext) {
     return GulpTasks.gulpTask
 }
 
-export function createTask(context: GulpContext, taskName: string, createTaskCallback: (workspace?: YarnWorkspace) => TaskFunction) {
+export function createTask(context: GulpContext, taskName: string, parallel: boolean, createTaskCallback: (workspace?: YarnWorkspace) => TaskFunction) {
     let task: TaskFunction
     if (context.project.workspaces.length > 0) {
         let workspaceTasks: TaskFunction[] = [];
@@ -43,7 +43,7 @@ export function createTask(context: GulpContext, taskName: string, createTaskCal
             workspaceTask.displayName = `${taskName}:${_.workspacePackage.packageObject.name}`;
             workspaceTasks.push(workspaceTask);
         });
-        task = gulp.parallel(workspaceTasks);
+        task = parallel? gulp.parallel(workspaceTasks) : gulp.series(workspaceTasks);
         task.displayName = taskName
     }
     else {
