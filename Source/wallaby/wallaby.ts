@@ -10,16 +10,12 @@ import { WallabySettingsCallback, SetupCallback, WallabySettings, WallabySetup }
 export function wallaby(settingsCallback?: WallabySettingsCallback, setupCallback?: SetupCallback) {
     return (wallaby: any) => {
         let project = new Project(process.cwd());
-        console.log(project);
         let setup = new WallabySetup(wallaby, project, setupCallback)
         let settings = new WallabySettings(wallaby, project, setup, settingsCallback);
         
         setNodePath(wallaby, project)
-        
 
         if (typeof settingsCallback === 'function') settingsCallback(wallaby, settings);
-
-        process.exit();
         return settings.settings;
     };
 }

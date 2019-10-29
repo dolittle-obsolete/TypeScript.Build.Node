@@ -3,8 +3,8 @@
 *  Licensed under the MIT License. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 import { Project } from "@dolittle/typescript.build";
-import tsconfig from 'tsconfig';
 import { WallabySetup } from "../../internal";
+import path from 'path';
 
 type WallabyFilePattern = string | {
     pattern: string, 
@@ -60,37 +60,32 @@ export class WallabySettings {
     private createFiles() {
         this._files = [];
         this._files.push(...this.getBaseFiles());
-        this._project.sources.declarationFilesGlobs.forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this._project.sources.compiledFilesGlobs.forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this._project.sources.testFileGlobs.forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this._project.sources.testSetupFileGlobs.forEach(glob => this._files.push({pattern: glob, instrument: false}))
-        this._project.sources.sourceFileGlobs.forEach(glob => this._files.push({pattern: glob}));
+        let sources = this._project.sources;
+        this.globsAsRelativeGlobs(sources.declarationFilesGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.compiledFilesGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testFileGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testSetupFileGlobs).forEach(glob => this._files.push({pattern: glob, instrument: false}))
+        this.globsAsRelativeGlobs(sources.sourceFileGlobs).forEach(glob => this._files.push({pattern: glob}));
     }
 
     private createTests() {
         this._tests = [];
-
-        this._project.sources.compiledFilesGlobs.forEach(glob => this._tests.push({pattern: glob, ignore: true}));
-        this._project.sources.testSetupFileGlobs.forEach(glob => this._tests.push({pattern: glob, ignore: true}));
-        this._project.sources.testFileGlobs.forEach(glob => this._tests.push({pattern: glob}));
+        let sources = this._project.sources;
+        this.globsAsRelativeGlobs(sources.compiledFilesGlobs).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testSetupFileGlobs).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testFileGlobs).forEach(glob => this._tests.push({pattern: glob}));
     }
 
     private createCompilers() {
         this._compilers = {};
-        if (this._project.workspaces.length > 0) {
-            this._project.workspaces.forEach(workspace => {
-                workspace.sources.sourceFileGlobs.forEach(glob => {
-                this._compilers[glob] = this._wallaby.compilers.typescript(tsconfig.loadSync(workspace.sources.tsConfig!).config);
-                });  
-            });
-        } else {
-            this._project.sources.sourceFileGlobs.forEach(glob => {
-                this._compilers[glob] = this._wallaby.compilers.typescript(tsconfig.loadSync(this._project.sources.tsConfig!).config);
-            });
-        }
+        let sources = this._project.sources;
+        this.globsAsRelativeGlobs(sources.sourceFileGlobs).forEach(glob => {
+            this._compilers[glob] = this._wallaby.compilers.typeScript({module: 'cjs', downlevelIteration: true, experimentalDecorators: true, esModuleInterop: true });
+        });
     }
 
     private getBaseFiles() {
+        
         return [
             { pattern: '**/package.json', instrument: false},
             { pattern: `*/node_modules/**/*`, instrument: false},
@@ -101,4 +96,9 @@ export class WallabySettings {
             { pattern: 'node_modules/@dolittle/typescript.build', instrument: false }
         ];
     }
+    
+    private globsAsRelativeGlobs(globs: string[]) {
+        return globs.map(glob => glob.replace(`${this._project.sources.rootFolder}${path.sep}`, ''))
+    }
+    
 }
