@@ -38,6 +38,7 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-typescript": "^5.0.1",
         "module-alias": "^2.2.0",
+        "tsconfig": "^7.0.0",
         "yargs": "^14.2.0"
     },
     "devDependencies": {

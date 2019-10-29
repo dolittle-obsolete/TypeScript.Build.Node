@@ -2,141 +2,35 @@
  *  Copyright (c) Dolittle. All rights reserved.
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import {Project, ProjectSources} from '@dolittle/typescript.build';
+import fs from 'fs';
 import path from 'path';
+import { WallabySettingsCallback, SetupCallback, WallabySettings, WallabySetup } from '../internal';
 
-type Workspace = {
-  name: string,
-  directory: string,
-  package: any
-}
-export function wallaby(wallabyBabelConfig: any, settingsCallback?: (w: any) => any, setupCallback?: () => void) {
-  return (w: any) => {
-    let workspaces = getWorkspaces();
-    
-    process.env.NODE_PATH = path.join(w.projectCacheDir, 'Source');
-    
-    let packagesGlob = workspaces.length > 0? `@(${workspaces.map(_ => _.name).join('|')})/` : '';
-  
-    let compilers: any= {};
-    compilers[`Source/${packagesGlob}/**/*.@(ts|js)`] = w.compilers.babel(wallabyBabelConfig);
+export function wallaby(settingsCallback?: WallabySettingsCallback, setupCallback?: SetupCallback) {
+    return (wallaby: any) => {
+        let project = new Project(process.cwd());
+        console.log(project);
+        let setup = new WallabySetup(wallaby, project, setupCallback)
+        let settings = new WallabySettings(wallaby, project, setup, settingsCallback);
+        
+        setNodePath(wallaby, project)
+        
 
-    let settings = {
-      files: [
-        { pattern: 'package.json', instrument: false},
-        { pattern: `Source/**/package.json`, instrument: false} ,
-        { pattern: `Source/**/node_modules/**/*`, instrument: false},
-        { pattern: 'node_modules/chai', instrument: false},
-        { pattern: 'node_modules/chai-as-promised', instrument: false },
-        { pattern: 'node_modules/sinon/pkg', instrument: false },
-        { pattern: 'node_modules/sinon-chai', instrument: false },
-        { pattern: `Source/**/*.d.ts`, ignore: true },
-        { pattern: `Source/${packagesGlob}lib/**`, ignore: true },
-        { pattern: `Source/${packagesGlob}**/for_*/**/!(given)/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}**/for_*/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}**/for_*/**/given/**/*.@(ts|js)`},
-        { pattern: `Source/${packagesGlob}**/*.@(ts|js)`}
-      ],
-      tests: [
-        { pattern: `Source/${packagesGlob}lib/**`, ignore: true },
-        { pattern: `Source/${packagesGlob}**/for_*/**/given/**/*.@(ts|js)`, ignore: true },
-        { pattern: `Source/${packagesGlob}**/for_*/**/!(given)/*.@(ts|js)`},
-        { pattern: `Source/${packagesGlob}**/for_*/*.@(ts|js)`}
-      ],
-      
-      testFramework: 'mocha',
-      env: {
-        type: 'node',
-        runner: 'node'
-      },
-      compilers,
-      setup: getSetupFunction(setupCallback)
-    }
-    if (typeof settingsCallback === 'function') settingsCallback(settings);
+        if (typeof settingsCallback === 'function') settingsCallback(wallaby, settings);
 
-    return settings;
-  };
+        process.exit();
+        return settings.settings;
+    };
 }
 
-function getWorkspaces(): Workspace[] {
-    const fs = require('fs');
-    const path = require('path');
-    
-    let workspaces: Workspace[] = [];
-    const packageJson = JSON.parse(fs.readFileSync('./package.json'));
-
-    if (packageJson.workspaces !== undefined) {
-      let dirs = fs.readdirSync('Source');
-      dirs.forEach((workspace: string) => {
-
-        let packageJsonPath = path.join(process.cwd(), 'Source', workspace, 'package.json');
-        let packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
-        workspaces.push({
-          name: workspace,
-          directory: path.dirname(packageJsonPath),
-          package: packageJson
-        })
-      });
-
+function setNodePath(w: any, project: Project) {
+    let nodePath: string = w.projectCacheDir;
+    for (let folderName of ProjectSources.sourceFileFolderNames) {
+        if (fs.existsSync(path.join(project.sources.rootFolder, folderName))) {
+          nodePath = path.join(nodePath, folderName); 
+          break;
+        }
     }
-    return workspaces;
-}
-
-
-function getFunctionBody(func: Function) {
-  var entire = func.toString();
-  var body = entire.substring(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-  return body;
-}
-
-function getSetupFunction(setupCallback?: () => void) {
-  var setup = (w: any) => {
-    (process.env as any).IS_TESTING = true;
-    // COPY OF getWorkspaces() FUNCTION!
-    const fs = require('fs');
-    const path = require('path');
-    
-    let workspaces: Workspace[] = [];
-    const packageJson = JSON.parse(fs.readFileSync('./package.json'));
-
-    if (packageJson.workspaces !== undefined) {
-      let dirs = fs.readdirSync('Source');
-      dirs.forEach((workspace: string) => {
-
-        let packageJsonPath = path.join(process.cwd(), 'Source', workspace, 'package.json');
-        let packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
-        workspaces.push({
-          name: workspace,
-          directory: path.dirname(packageJsonPath),
-          package: packageJson
-        })
-      });
-    }
-
-    if (workspaces.length > 0) {
-      let aliases: any = {};
-      workspaces.forEach((_: Workspace) => {
-        aliases[_.package.name] = _.directory;
-      });
-      require('module-alias').addAliases(aliases);
-    }
-    (global as any).expect = chai.expect;
-    let should = chai.should();
-    (global as any).sinon = require('sinon');
-    let sinonChai = require('sinon-chai');
-    let chaiAsPromised = require('chai-as-promised');
-    chai.use(sinonChai);
-    chai.use(chaiAsPromised);
-
-    (global as any).mock = require('@fluffy-spoon/substitute').Substitute;
-  }
-
-  if (typeof setupCallback === 'function') {
-      var setupBody = getFunctionBody(setup);
-      var setupCallbackBody = getFunctionBody(setupCallback);
-      var combined = setupBody + '\n' + setupCallbackBody;
-      var newFunction = new Function(combined);
-      return newFunction;
-  }
-
-  return setup;
+    process.env.NODE_PATH = nodePath;
 }

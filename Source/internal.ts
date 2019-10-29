@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 // wallaby
 export * from './Wallaby/wallaby';
-export * from './Wallaby/babel.wallaby';
+export * from './Wallaby/Settings/WallabySettings';
+export * from './Wallaby/Settings/WallabySetup';
 
 // gulp
 export * from './Gulp/GulpContext'
