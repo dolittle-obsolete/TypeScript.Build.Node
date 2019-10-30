@@ -6,7 +6,7 @@ import gulp from 'gulp';
 import gulpSourcemaps from 'gulp-sourcemaps';
 import gulpTypescript from 'gulp-typescript';
 import {TaskFunction} from 'undertaker';
-import {GulpContext, createTask, getCleanTasks} from '../../internal'
+import {GulpContext, getCleanTasks} from '../../internal'
 import { Readable } from 'stream';
 
 
@@ -39,7 +39,7 @@ export class BuildTasks {
             let projectSources = this._context.project.sources;
             let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
             let taskFunction: TaskFunction = done => {
-                let tsResult = tsProject.src()
+                let tsResult = gulp.src(projectSources.sourceFileGlobs)
                     .pipe(gulpSourcemaps.init())
                     .pipe(tsProject());
                 tsResult.dts
@@ -66,7 +66,7 @@ export class BuildTasks {
             let projectSources = workspace.sources;
             let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
             let taskFunction: TaskFunction = done => {
-                let tsResult = tsProject.src()
+                let tsResult = gulp.src(projectSources.sourceFileGlobs)
                     .pipe(gulpSourcemaps.init())
                     .pipe(tsProject());
                     
