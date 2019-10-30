@@ -6,8 +6,6 @@ import gulp from 'gulp';
 import gulpMocha from 'gulp-mocha';
 import {TaskFunction} from 'undertaker';
 import {GulpContext, createTask, getBuildTasks} from '../../internal'
-import {  } from './BuildTasks';
-
 
 export class TestTasks {
     static testTasks: TestTasks
