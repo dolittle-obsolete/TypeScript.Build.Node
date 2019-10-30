@@ -85,20 +85,28 @@ export class WallabySettings {
     }
 
     private getBaseFiles() {
-        
+        let baseFiles = [{ pattern: 'package.json', instrument: false}];
+        if (this._project.workspaces.length > 0) {
+            baseFiles.push({pattern: `${this.getRelativePathToSource()}/**/package.json`, instrument: false});
+            baseFiles.push({pattern: `${this.getRelativePathToSource()}/**/node_modules/**/*`, instrument: false});
+        }
         return [
-            { pattern: '**/package.json', instrument: false},
-            { pattern: `*/node_modules/**/*`, instrument: false},
-            { pattern: 'node_modules/chai', instrument: false},
-            { pattern: 'node_modules/chai-as-promised', instrument: false },
-            { pattern: 'node_modules/sinon/pkg', instrument: false },
-            { pattern: 'node_modules/sinon-chai', instrument: false },
-            { pattern: 'node_modules/@dolittle/typescript.build', instrument: false }
+            { pattern: 'node_modules/chai/**/*', instrument: false},
+            { pattern: 'node_modules/chai-as-promised/**/*', instrument: false },
+            { pattern: 'node_modules/sinon/pkg/**/*', instrument: false },
+            { pattern: 'node_modules/sinon-chai/**/*', instrument: false },
+            { pattern: 'node_modules/@dolittle/typescript.build/**/*', instrument: false }
         ];
     }
     
     private globsAsRelativeGlobs(globs: string[]) {
         return globs.map(glob => glob.replace(`${this._project.sources.rootFolder}${path.sep}`, ''))
+    }
+
+    private getRelativePathToSource() {
+        let sourceFilesRoot = this._project.sources.sourceFilesRoot;
+        let root = this._project.sources.rootFolder;
+        return root === sourceFilesRoot? '' : sourceFilesRoot.replace(`${root}${path.sep}`, '');
     }
     
 }
