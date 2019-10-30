@@ -19,24 +19,6 @@ export class BuildTasks {
 
     get buildTask() {
         if (this._buildTask === undefined) {
-            // DOES NOT WORK WHEN BUILDING IN PARALLELL, PROBABLY BECAUSE OF FILE OUTPUT
-            // this._buildTask = gulp.series(getCleanTasks(this._context).cleanTask, 
-            //     createTask(this._context, 'ts-build', true, workspace => {
-            //         let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-            //         let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
-            //         return done => {
-            //             let tsResult = tsProject.src()
-            //                 .pipe(gulpSourcemaps.init())
-            //                 .pipe(tsProject());
-            //             tsResult.dts
-            //                 .pipe(gulp.dest(projectSources.outputFolder!));
-            //             return tsResult.js
-            //                 .pipe(gulpSourcemaps.write())
-            //                 .pipe(gulp.dest(projectSources.outputFolder!))
-            //                 .on('end', done);
-            //         };
-            //     })
-            // );
             this._buildTask = this.createBuildTask();
         }
 
@@ -68,6 +50,7 @@ export class BuildTasks {
                     .on('end', _ => done())
                     .on('error', err => done(err));
             };
+            taskFunction.displayName = `build:${this._context.project.rootPackage.packageObject.name}`;
             task = gulp.series(getCleanTasks(this._context).cleanTask, taskFunction);
                 
         }
@@ -110,7 +93,10 @@ export class BuildTasks {
             }
         };
         writeFilesTask.displayName = 'build-write-files';
-        let task = gulp.series(gulp.parallel(tasks), writeFilesTask);
+        let parallelBuild = gulp.parallel(tasks);
+        parallelBuild.displayName = 'build-parallel';
+        let task = gulp.series(parallelBuild, writeFilesTask);
+
         return task;
     }
 }
