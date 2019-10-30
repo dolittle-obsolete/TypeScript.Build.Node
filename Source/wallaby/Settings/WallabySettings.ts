@@ -90,13 +90,13 @@ export class WallabySettings {
             baseFiles.push({pattern: `${this.getRelativePathToSource()}/**/package.json`, instrument: false});
             baseFiles.push({pattern: `${this.getRelativePathToSource()}/**/node_modules/**/*`, instrument: false});
         }
-        return [
+        return baseFiles.concat([
             { pattern: 'node_modules/chai/**/*', instrument: false},
             { pattern: 'node_modules/chai-as-promised/**/*', instrument: false },
             { pattern: 'node_modules/sinon/pkg/**/*', instrument: false },
             { pattern: 'node_modules/sinon-chai/**/*', instrument: false },
             { pattern: 'node_modules/@dolittle/typescript.build/**/*', instrument: false }
-        ];
+        ]);
     }
     
     private globsAsRelativeGlobs(globs: string[]) {
