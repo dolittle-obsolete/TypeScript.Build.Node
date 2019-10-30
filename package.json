@@ -1,6 +1,6 @@
 {
     "name": "@dolittle/typescript.build.node",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Base build pipeline for Dolittle TypeScript node-based projects",
     "author": "",
     "license": "ISC",
