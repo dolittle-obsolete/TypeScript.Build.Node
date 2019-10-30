@@ -31,7 +31,7 @@ export class CleanTasks {
         if (this._testsCleanTask === undefined) {
             this._testsCleanTask = createTask(this._context, 'test-clean', true, workspace => {
                 let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-                return done => rimraf(`${toUnixPath(projectSources.outputFolder!)}/**/for_`, error => done(error));
+                return done => rimraf(`${toUnixPath(projectSources.outputFolder!)}/**/for_*`, error => done(error));
             });
         }
     
