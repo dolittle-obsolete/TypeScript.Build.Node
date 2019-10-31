@@ -8,6 +8,7 @@ export * from './Wallaby/Settings/WallabySettings';
 export * from './Wallaby/Settings/WallabySetup';
 
 // gulp
+export * from './Gulp/setup'
 export * from './Gulp/GulpContext'
 export * from './Gulp/Tasks/CleanTasks';
 export * from './Gulp/Tasks/BuildTasks';
