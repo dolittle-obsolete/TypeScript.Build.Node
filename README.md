@@ -40,9 +40,6 @@ This package also provides every dependency you'd need to perform tests using th
 Included in the package is a [Gulp](https://gulpjs.com) based build pipeline. The purpose of the build is to enable an
 easy way to build and output what is needed for a deployable package that is widely supported in any JavaScript and or TypeScript environment. It outputs by default the CJS module format
 
-Once you've done that, you can start using the build tasks by creating a `gulpfile.js` at the root of your project
-and add the following:
-
 ### Task
 
 The tasks is context sensitive and will understand wether or not to build the current **package** or all the **packages**
