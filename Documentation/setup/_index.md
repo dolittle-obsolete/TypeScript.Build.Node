@@ -1,17 +1,18 @@
 ---
 title: Setup
-description: Learn how to setup and use the typescript build pipeline
-keywords: Tools, typescript build pipeline, setup
+description: Learn how to setup and use the typescript build for node
+keywords: Tools, typescript, build, node, setup
 author: woksin
 weight: 1
-repository: https://github.com/dolittle-tools/TypeScript.Build
+repository: https://github.com/dolittle-tools/TypeScript.Build.Node
+aliases: /tooling/typescript/build/node/setup
 ---
 
 To use the TypeScript Build Pipeline, all you have to do is to add this dependency in your devDependencies in your root package.json:
 
 ```json
 "devDependencies": {
-    "@dolittle/typescript.build": "^1.0.0"
+    "@dolittle/typescript.build.node": "^1.0.0"
 }
 ```
 
