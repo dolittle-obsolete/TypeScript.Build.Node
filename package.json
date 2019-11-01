@@ -1,6 +1,6 @@
 {
     "name": "@dolittle/typescript.build.node",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "Base build pipeline for Dolittle TypeScript node-based projects",
     "author": "",
     "license": "ISC",
@@ -38,6 +38,7 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-typescript": "^5.0.1",
         "module-alias": "^2.2.0",
+        "rimraf": "^3.0.0",
         "slash": "^3.0.0"
     },
     "devDependencies": {
