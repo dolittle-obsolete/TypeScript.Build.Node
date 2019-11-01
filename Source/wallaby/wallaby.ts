@@ -22,11 +22,9 @@ export function wallaby(settingsCallback?: WallabySettingsCallback, setupCallbac
 
 function setNodePath(w: any, project: Project) {
     let nodePath: string = w.projectCacheDir;
-    for (let folderName of ProjectSources.sourceFileFolderNames) {
-        if (fs.existsSync(path.join(project.sources.rootFolder, folderName))) {
-          nodePath = path.join(nodePath, folderName); 
-          break;
-        }
+    if (fs.existsSync(path.join(project.sources.rootFolder, ProjectSources.sourceFileFolderName))) {
+        nodePath = path.join(nodePath, ProjectSources.sourceFileFolderName);
     }
+
     process.env.NODE_PATH = nodePath;
 }
