@@ -39,7 +39,7 @@ export class BuildTasks {
             let projectSources = this._context.project.sources;
             let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
             let taskFunction: TaskFunction = done => {
-                let tsResult = gulp.src(projectSources.sourceFileGlobs.includes.concat(projectSources.sourceFileGlobs.includes.map(_ => '!' + _)))
+                let tsResult = gulp.src(projectSources.sourceFileGlobs.includes.concat(projectSources.sourceFileGlobs.excludes.map(_ => '!' + _)))
                     .pipe(gulpSourcemaps.init())
                     .pipe(tsProject());
                 tsResult.dts
@@ -66,7 +66,7 @@ export class BuildTasks {
             let projectSources = workspace.sources;
             let tsProject = gulpTypescript.createProject(projectSources.tsConfig!);
             let taskFunction: TaskFunction = done => {
-                let tsResult = gulp.src(projectSources.sourceFileGlobs.includes.concat(projectSources.sourceFileGlobs.includes.map(_ => '!' + _)))
+                let tsResult = gulp.src(projectSources.sourceFileGlobs.includes.concat(projectSources.sourceFileGlobs.excludes.map(_ => '!' + _)))
                     .pipe(gulpSourcemaps.init())
                     .pipe(tsProject());
                     
