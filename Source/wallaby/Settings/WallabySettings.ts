@@ -71,6 +71,7 @@ export class WallabySettings {
     private createTests() {
         this._tests = [];
         let sources = this._project.sources;
+        this.globsAsRelativeGlobs(sources.declarationFilesGlobs.includes).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
         this.globsAsRelativeGlobs(sources.compiledFilesGlobs.includes).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
         this.globsAsRelativeGlobs(sources.testSetupFileGlobs.includes).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
         this.globsAsRelativeGlobs(sources.testFileGlobs.includes).forEach(glob => this._tests.push({pattern: glob}));
