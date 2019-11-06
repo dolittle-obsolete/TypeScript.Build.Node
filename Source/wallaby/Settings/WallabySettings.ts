@@ -61,25 +61,25 @@ export class WallabySettings {
         this._files = [];
         this._files.push(...this.getBaseFiles());
         let sources = this._project.sources;
-        this.globsAsRelativeGlobs(sources.declarationFilesGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this.globsAsRelativeGlobs(sources.compiledFilesGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this.globsAsRelativeGlobs(sources.testFileGlobs).forEach(glob => this._files.push({pattern: glob, ignore: true}));
-        this.globsAsRelativeGlobs(sources.testSetupFileGlobs).forEach(glob => this._files.push({pattern: glob, instrument: false}))
-        this.globsAsRelativeGlobs(sources.sourceFileGlobs).forEach(glob => this._files.push({pattern: glob}));
+        this.globsAsRelativeGlobs(sources.declarationFilesGlobs.includes).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.compiledFilesGlobs.includes).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testFileGlobs.includes).forEach(glob => this._files.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testSetupFileGlobs.includes).forEach(glob => this._files.push({pattern: glob, instrument: false}))
+        this.globsAsRelativeGlobs(sources.sourceFileGlobs.includes).forEach(glob => this._files.push({pattern: glob}));
     }
 
     private createTests() {
         this._tests = [];
         let sources = this._project.sources;
-        this.globsAsRelativeGlobs(sources.compiledFilesGlobs).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
-        this.globsAsRelativeGlobs(sources.testSetupFileGlobs).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
-        this.globsAsRelativeGlobs(sources.testFileGlobs).forEach(glob => this._tests.push({pattern: glob}));
+        this.globsAsRelativeGlobs(sources.compiledFilesGlobs.includes).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testSetupFileGlobs.includes).forEach(glob => this._tests.push({pattern: glob, ignore: true}));
+        this.globsAsRelativeGlobs(sources.testFileGlobs.includes).forEach(glob => this._tests.push({pattern: glob}));
     }
 
     private createCompilers() {
         this._compilers = {};
         let sources = this._project.sources;
-        this.globsAsRelativeGlobs(sources.sourceFileGlobs).forEach(glob => {
+        this.globsAsRelativeGlobs(sources.sourceFileGlobs.includes).forEach(glob => {
             this._compilers[glob] = this._wallaby.compilers.typeScript({module: 'cjs', downlevelIteration: true, experimentalDecorators: true, esModuleInterop: true });
         });
     }

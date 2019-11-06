@@ -19,7 +19,7 @@ export class TestTasks {
         if (this._runTestsTask === undefined) {
             this._runTestsTask = createTask(this._context, 'test-run', false, workspace => {
                 let projectSources = workspace !== undefined? workspace.sources : this._context.project.sources;
-                return done => gulp.src(projectSources.compiledTestsGlobs!, {read: false})
+                return done => gulp.src(projectSources.compiledTestsGlobs.includes.concat(projectSources.sourceFileGlobs.includes.map(_ => '!' + _)), {read: false})
                                 .pipe(gulpMocha({reporter: 'spec', require: ['@dolittle/typescript.build/mocha.opts']}))
                                 .on('end', done);
             });
